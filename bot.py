@@ -36,47 +36,38 @@ try:
 
     @bot.message_handler(content_types=['text'])
     def tg(message):
-        if message.text == ('/start'):
+       
+        if message.text == ('/start'):               # приветствие и примеры
             bot.send_message(message.from_user.id,
-            f'''url: {url}\nсинтаксис:
-            /gss адресс
-            значение ячейки|значение ячейки
-ниже отправлю пару примеров''') # приветствие и примеры
+            f'url: {url}\nсинтаксис:\n/gss адресс\nзначение ячейки|значение ячейки\nyиже отправлю пару примеров') 
             bot.send_message(message.from_user.id,
-            f'/gss C1\nThis is C1')
+            '/gss C1\nThis is C1')
+            
             bot.send_message(message.from_user.id,
-            f'''/gss A2:C3
-a2|b2|c2
-a3|b3|c3''')
-            bot.send_message(message.from_user.id,
-            f'''/gss A1:B7
-1|100
-2|465
-3|54
-4|87
-5|134
-6|879
-Итого|=B1+B2+B4+B5+B6''')
+            '/gss A2:C3\na2|b2|c2\na3|b3|c3')
 
-            # получение значений из бота и отправка их на едит
-        elif message.text.startswith('/gss'):
+            bot.send_message(message.from_user.id,
+            '/gss A1:B7\n1|100\n2|465\n3|54\n4|87\n5|134\n6|879\nИтого|=B1+B2+B4+B5+B6')
+
+            
+        elif message.text.startswith('/gss'):        # получение значений и отправка их на едит
             msg = str(message.text)[5:]
-
-            if 'rows' in msg: majorDimension = 'ROWS'
-            elif 'columns' in msg: majorDimension = 'COLUMNS'
-            else: majorDimension = 'ROWS'
-
-            range = msg.split('\n')[0].split(' ')[0]
-
-            values = []
-            for i in msg.split('\n')[1:]:
-                values.append(i.split('|'))
-
-            bot.send_message(message.from_user.id,
+            
+            
+            if 'rows' in msg: majorDimension = 'ROWS'            #
+            elif 'columns' in msg: majorDimension = 'COLUMNS'    # орентация заполнения таблички
+            else: majorDimension = 'ROWS'                        #
+    
+            range = msg.split('\n')[0].split(' ')[0] #  адреса ячеек
+            values = []                              #
+            for i in msg.split('\n')[1:]:            #  значения ячеек
+                values.append(i.split('|'))          #
+    
+            bot.send_message(message.from_user.id,   # фидбек в чат
                             f'range: {range}\nvalues: {values}')
 
-            try:
-                r = sheet.values().batchUpdate(
+            try:   
+                r = sheet.values().batchUpdate( 
                     spreadsheetId=SPREADSHEET_ID,
                     body = {
                         'value_input_option' : 'USER_ENTERED',
@@ -86,9 +77,9 @@ a3|b3|c3''')
                                 }
                             }).execute()
             except Exception as e:
-                print(e)
+                (f'in batchUpdate >>\t{e}\n')
     print('in')
     bot.polling(none_stop=True, interval=0)
 
 except Exception as e:
-    print(e)
+    print(f'in main >>\t{e}\n')
